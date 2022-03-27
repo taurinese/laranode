@@ -1,10 +1,8 @@
 require('dotenv').config()
 
 const http = require("http");
-const UserController = require('./app/Controllers/UserController');
-const UserValidator = require('./app/Validator/UserValidator');
-const Router = require('./bootstrap/Router');
-const router = new Router();
+
+const routes = require('./routes/index')
 
 const PORT = process.env.PORT || 5000;
 
@@ -12,7 +10,8 @@ const server = http.createServer(async (req,res) => {
     /* router.get("/test", (req, res) => {
         //
     }) */
-    if(req.url == "/users" && req.method === "GET"){
+    routes(req, res);
+    /* if(req.url == "/users" && req.method === "GET"){
         const userController = new UserController(req, res);
         const users = await userController.get();
         res.writeHead(200, { "Content-Type": "application/json" });
@@ -88,26 +87,9 @@ const server = http.createServer(async (req,res) => {
     else {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ message: "Route not found" }));
-    }
+    } */
 })
 
-
-const getPostData = async (request) => {
-    return new Promise((resolve, reject) => {
-        let totalChunked = ""
-        request.on("error", err => {
-            console.error(err);
-            reject();
-        })
-        .on("data", chunk => {
-            totalChunked += chunk;
-        })
-        .on("end", () => {
-            request.body = JSON.parse(totalChunked);
-            resolve();
-        })
-    })
-}
 
 server.listen(PORT, () => {
     console.log(`server started on port: ${PORT}`);
